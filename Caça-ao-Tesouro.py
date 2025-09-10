@@ -92,7 +92,7 @@ def exibir_regras():
     print("- Tabuleiro 10x10. Jogadores começam na posição (0,0)")
     print("- Tesouros valem +10 pontos (símbolo: T)")
     print("- Armadilhas tiram -5 pontos (símbolo: A)")
-    print("- Cada jogador começa com 10 pontos")
+    print("- Cada jogador começa com 0 pontos")
     print("- Serão 10 rodadas (5 para cada jogador)")
     print("- Em cada rodada, rola-se um dado (1 a 6) e o jogador escolhe a direção")
     print("- Quem tiver mais pontos no final, vence!\n")
