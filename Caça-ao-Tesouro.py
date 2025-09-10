@@ -28,10 +28,8 @@ def mostrar_tabuleiro(tabuleiro, posicao_atual, siglas_jogadores):
                 print(tabuleiro[i][j], end="  ")
         print()
 
-
 def definir_jogadores():
     jogadores = {}
-
     for i in range(2):  
         nome = ''
         while(nome.strip() == '' or nome in jogadores):        
@@ -60,7 +58,6 @@ def esconder_T(tabuleiro):
         except ValueError:
             print('Você deve digitar um número válido!')
 
-
     for i in range(qtd_T):
         linha, coluna = verificar_posicao(usadas)
         tabuleiro[linha][coluna] = "T"
@@ -72,7 +69,6 @@ def esconder_A(usadas, tabuleiro):
     while(qtd_A < 5 or qtd_A > 10):
         try:
             qtd_A = int(input('Digite a quantidade de armadilhas que serão escondidas no tabuleiro (5 a 10): '))
-
             if qtd_A < 5 or qtd_A > 10:
                 print('A quantidade de armadilhas deve ser entre 5 e 10!')
         except ValueError:
@@ -97,20 +93,16 @@ def exibir_regras():
     print("- Tesouros valem +10 pontos (símbolo: T)")
     print("- Armadilhas tiram -5 pontos (símbolo: A)")
     print("- Cada jogador começa com 10 pontos")
-    print("- Serão 20 rodadas (10 para cada jogador)")
-    print("- Em cada rodada, rola-se dois dados: define a posição")
+    print("- Serão 10 rodadas (5 para cada jogador)")
+    print("- Em cada rodada, rola-se um dado (1 a 6) e o jogador escolhe a direção")
     print("- Quem tiver mais pontos no final, vence!\n")
 
 def start():
     rodada = 0
     return rodada
 
-
 def verificar_rodada(rodada):
-    if(rodada < 20):
-        return True
-    else:
-        return False
+    return rodada < 10
     
 def contador(jogadores, liberacao):
     if(liberacao == False):
@@ -124,15 +116,44 @@ def contador(jogadores, liberacao):
                 maior_pontuacao = pontos
                 vencedor = jogador
         print(f'\nVencedor: {vencedor} com {maior_pontuacao} pontos!')
-            
-def dado(liberacao, rodada, jogadores):
-    if liberacao:
-        linha = random.randint(0, 9)
-        coluna = random.randint(0, 9)
-        nova_posicao = (linha, coluna)
 
+def mover(pos, dado, direcao):
+    x, y = pos
+    if direcao == "cima":
+        x -= dado
+    elif direcao == "baixo":
+        x += dado
+    elif direcao == "esquerda":
+        y -= dado
+    elif direcao == "direita":
+        y += dado
+
+    if x < 0:
+        x = 0
+    elif x > 9:
+        x = 9
+
+    if y < 0:
+        y = 0
+    elif y > 9:
+        y = 9
+
+    return (x, y)
+
+
+def dado(liberacao, rodada, jogadores, posicao_atual):
+    if liberacao:
         nomes = list(jogadores.keys())
         jogador = nomes[rodada % 2]
+
+        print(f"\nVez do jogador: {jogador}")
+        dado_valor = random.randint(1, 6)
+        print(f"🎲 O dado rolou e saiu: {dado_valor}")
+
+        direcao = input("Digite a direção (cima, baixo, esquerda, direita): ").lower()
+
+        pos_atual = posicao_atual[jogador]
+        nova_posicao = mover(pos_atual, dado_valor, direcao)
 
         rodada += 1
         return nova_posicao, rodada, jogador
@@ -150,7 +171,6 @@ def gerar_sigla(nome, siglas_usadas ):
         if letra not in siglas_usadas:
             return letra
 
-    
 def main():
     repetir = 'SIM'
     while(repetir == 'SIM'):
@@ -175,21 +195,21 @@ def main():
             mostrar_tabuleiro(tabuleiro, posicao_atual, siglas_jogadores)
 
             input(f"\nRodada {rodada+1} - Pressione ENTER para jogar os dados...")
-            
-            nova_posicao, rodada, jogador = dado(True, rodada, jogadores)
+
+            nova_posicao, rodada, jogador = dado(True, rodada, jogadores, posicao_atual)
             posicao_atual, tabuleiro = atualizar_posicao(posicao_atual, nova_posicao, jogador, tabuleiro)
 
             linha, coluna = nova_posicao
             if tabuleiro[linha][coluna] == "T":
                 jogadores[jogador] += 10
-                print(f"{jogador} encontrou um TESOURO! +10 pontos")
+                print(f"🎉 {jogador} encontrou um TESOURO! +10 pontos")
             elif tabuleiro[linha][coluna] == "A":
                 jogadores[jogador] -= 5
-                print(f"{jogador} caiu em uma ARMADILHA! -5 pontos")
+                print(f"💀 {jogador} caiu em uma ARMADILHA! -5 pontos")
 
         contador(jogadores, False)
         repetir = input('Jogar denovo? \n').upper()
     print('\nObrigado por jogar!\n')
 
-#Principal
+# Principal
 main()
